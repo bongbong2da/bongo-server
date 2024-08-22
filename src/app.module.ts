@@ -6,6 +6,7 @@ import { BusesModule } from './buses/buses.module';
 import { UserTokensModule } from './user-tokens/user-tokens.module';
 import { FriendshipsModule } from './friendships/friendships.module';
 import { BusCrewsModule } from './bus-crews/bus-crews.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { BusCrewsModule } from './bus-crews/bus-crews.module';
     UserTokensModule,
     FriendshipsModule,
     BusCrewsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
