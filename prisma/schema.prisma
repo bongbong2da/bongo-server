@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BusCrews {
+  id        Int
+  userId    Int       @map("user_id")
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+  buses     Buses     @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "bus_crews_bus_id_fkey")
+  users     Users     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([id, userId])
+  @@map("bus_crews")
+}
+
+model Buses {
+  id            Int            @id @default(autoincrement())
+  title         String         @db.VarChar(100)
+  startDatetime DateTime       @map("start_datetime") @db.Timestamp(6)
+  endDatetime   DateTime       @map("end_datetime") @db.Timestamp(6)
+  description   String?
+  status        BusStatusTypes
+  createdAt     DateTime?      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime?      @default(now()) @map("updated_at") @db.Timestamp(6)
+  isPrivate     Boolean        @default(false) @map("is_private")
+  password      String?        @db.VarChar(100)
+  busCrews      BusCrews[]
+
+  @@map("buses")
+}
+
+model Friendships {
+  userId                          Int                   @map("user_id")
+  friendId                        Int                   @map("friend_id")
+  status                          FriendshipStatusTypes @default(pending)
+  createdAt                       DateTime?             @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                       DateTime?             @default(now()) @map("updated_at") @db.Timestamp(6)
+  usersFriendshipsFriendIdTousers Users                 @relation("friendships_friend_idTousers", fields: [friendId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usersFriendshipsUserIdTousers   Users                 @relation("friendships_user_idTousers", fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([userId, friendId])
+  @@map("friendships")
+}
+
+model Notifications {
+  id        Int       @id @default(autoincrement())
+  userId    Int?      @map("user_id")
+  message   String
+  isRead    Boolean?  @default(false) @map("is_read")
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+  users     Users?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("notifications")
+}
+
+model UserTokens {
+  id               Int       @id @default(autoincrement())
+  userId           Int?      @map("user_id")
+  accessToken      String    @map("access_token")
+  refreshToken     String    @map("refresh_token")
+  accessExpiresAt  DateTime  @map("access_expires_at") @db.Timestamp(6)
+  refreshExpiresAt DateTime  @map("refresh_expires_at") @db.Timestamp(6)
+  createdAt        DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt        DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+  users            Users?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("user_tokens")
+}
+
+model Users {
+  id                                    Int             @id @default(autoincrement())
+  username                              String          @db.VarChar(50)
+  email                                 String          @unique @db.VarChar(100)
+  password                              String          @db.VarChar(255)
+  createdAt                             DateTime?       @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                             DateTime?       @default(now()) @map("updated_at") @db.Timestamp(6)
+  busCrews                              BusCrews[]
+  friendshipsFriendshipsFriendIdTousers Friendships[]   @relation("friendships_friend_idTousers")
+  friendshipsFriendshipsUserIdTousers   Friendships[]   @relation("friendships_user_idTousers")
+  notifications                         Notifications[]
+  userTokens                            UserTokens[]
+
+  @@map("users")
+}
+
+enum BusStatusTypes {
+  open
+  closed
+  approaching
+  full
+  canceled
+
+  @@map("bus_status_types")
+}
+
+enum FriendshipStatusTypes {
+  pending
+  accepted
+  denied
+
+  @@map("friendship_status_types")
+}
