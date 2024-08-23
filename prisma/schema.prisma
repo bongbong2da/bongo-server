@@ -2,6 +2,29 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator nestjsDto {
+  provider                        = "prisma-generator-nestjs-dto"
+  output                          = "../src"
+  entitySuffix                    = ""
+  outputToNestJsResourceStructure = "true"
+  prettier                        = "true"
+  updateDtoPrefix                 = "Update"
+  fileNamingStyle                 = "kebab"
+  requiredResponseApiProperty     = "true"
+  classValidation                 = "true"
+  flatResourceStructure           = "false"
+  definiteAssignmentAssertion     = "false"
+  outputType                      = "class"
+  createDtoPrefix                 = "Create"
+  dtoSuffix                       = "Dto"
+  reExport                        = "false"
+  entityPrefix                    = ""
+  noDependencies                  = "false"
+  outputApiPropertyType           = "true"
+  generateFileTypes               = "all"
+  exportRelationModifierClasses   = "true"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
