@@ -6,29 +6,19 @@ import {
   IsString,
 } from 'class-validator';
 
-export class CreateUsersDto {
+export class CreateSocialUsersDto {
   @ApiProperty({
     type: 'string',
   })
   @IsNotEmpty()
   @IsString()
-  username: string;
+  provider: string;
   @ApiProperty({
     type: 'string',
-    required: false,
-    nullable: true,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  email?: string | null;
-  @ApiProperty({
-    type: 'string',
-    required: false,
-    nullable: true,
-  })
-  @IsOptional()
-  @IsString()
-  password?: string | null;
+  socialId: string;
   @ApiProperty({
     type: 'string',
     format: 'date-time',
@@ -49,4 +39,26 @@ export class CreateUsersDto {
   @IsOptional()
   @IsDateString()
   updatedAt?: Date | null;
+  @ApiProperty({
+    type: 'string',
+  })
+  @IsNotEmpty()
+  @IsString()
+  nickname: string;
+  @ApiProperty({
+    type: 'string',
+    required: false,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString()
+  profileImageUrl?: string | null;
+  @ApiProperty({
+    type: 'string',
+    required: false,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString()
+  email?: string | null;
 }

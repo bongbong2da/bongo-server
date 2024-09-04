@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BusCrews } from '../../bus-crews/entities/bus-crews.entity';
 import { Friendships } from '../../friendships/entities/friendships.entity';
 import { Notifications } from '../../notifications/entities/notifications.entity';
+import { SocialUsers } from '../../social-users/entities/social-users.entity';
 import { UserTokens } from '../../user-tokens/entities/user-tokens.entity';
 
 export class Users {
@@ -16,12 +17,14 @@ export class Users {
   username: string;
   @ApiProperty({
     type: 'string',
+    nullable: true,
   })
-  email: string;
+  email: string | null;
   @ApiProperty({
     type: 'string',
+    nullable: true,
   })
-  password: string;
+  password: string | null;
   @ApiProperty({
     type: 'string',
     format: 'date-time',
@@ -58,6 +61,12 @@ export class Users {
     required: false,
   })
   notifications?: Notifications[];
+  @ApiProperty({
+    type: () => SocialUsers,
+    isArray: true,
+    required: false,
+  })
+  socialUsers?: SocialUsers[];
   @ApiProperty({
     type: () => UserTokens,
     isArray: true,
