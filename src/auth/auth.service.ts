@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateSocialUsersDto } from '../social-users/dto/create-social-users.dto';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -10,7 +10,7 @@ export class AuthService {
     readonly jwt: JwtService,
   ) {}
 
-  async signIn(createSocialUser: CreateSocialUsersDto) {
+  async kakaoSignIn(createSocialUser: CreateSocialUsersDto) {
     const socialUser = await this.prisma.socialUsers.findUnique({
       where: {
         socialId: createSocialUser.socialId,
@@ -35,7 +35,7 @@ export class AuthService {
           socialUsers: {
             create: {
               socialId: createSocialUser.socialId,
-              provider: createSocialUser.provider,
+              provider: 'kakao',
               nickname: createSocialUser.nickname,
             },
           },
@@ -45,5 +45,19 @@ export class AuthService {
       const refreshToken = this.jwt.sign({ sub: user.id }, { expiresIn: '7d' });
       return { accessToken, refreshToken };
     }
+  }
+
+  async refreshToken(tokens: { accessToken: string; refreshToken: string }) {
+    const isValidRefreshToken = this.jwt.verify(tokens.refreshToken);
+
+    if (!isValidRefreshToken) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const newAccessToken = this.jwt.sign(
+      { sub: isValidRefreshToken.sub },
+      { expiresIn: '1d' },
+    );
+    return { accessToken: newAccessToken, refreshToken: tokens.refreshToken };
   }
 }
