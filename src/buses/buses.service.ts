@@ -1,26 +1,50 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBusDto } from './dto/create-bus.dto';
-import { UpdateBusDto } from './dto/update-bus.dto';
+import { PrismaService } from '../prisma.service';
+import { CreateBusesDto } from './dto/create-buses.dto';
+import { UpdateBusesDto } from './dto/update-buses.dto';
 
 @Injectable()
 export class BusesService {
-  create(createBusDto: CreateBusDto) {
-    return 'This action adds a new bus';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createBusDto: CreateBusesDto) {
+    const createResult = await this.prisma.buses.create({
+      data: {
+        ...createBusDto,
+        status: 'open',
+      },
+    });
+    return createResult;
   }
 
-  findAll() {
-    return `This action returns all buses`;
+  async findAll() {
+    return await this.prisma.buses.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} bus`;
+  async findOne(busId: number) {
+    return await this.prisma.buses.findUnique({
+      where: {
+        id: busId,
+      },
+    });
   }
 
-  update(id: number, updateBusDto: UpdateBusDto) {
-    return `This action updates a #${id} bus`;
+  async update(busId: number, updateBusDto: UpdateBusesDto) {
+    const updateResult = await this.prisma.buses.update({
+      where: {
+        id: busId,
+      },
+      data: updateBusDto,
+    });
+    return updateResult;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} bus`;
+  remove(busId: number) {
+    const deleteResult = this.prisma.buses.delete({
+      where: {
+        id: busId,
+      },
+    });
+    return deleteResult;
   }
 }

@@ -2,12 +2,22 @@ import { BusStatusTypes } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
 
 export class CreateBusesDto {
+  @ApiProperty({
+    type: 'integer',
+    format: 'int32',
+    default: 'autoincrement',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt()
+  id?: number;
   @ApiProperty({
     type: 'string',
   })

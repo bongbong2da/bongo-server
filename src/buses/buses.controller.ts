@@ -8,15 +8,17 @@ import {
   Post,
 } from '@nestjs/common';
 import { BusesService } from './buses.service';
-import { CreateBusDto } from './dto/create-bus.dto';
-import { UpdateBusDto } from './dto/update-bus.dto';
+import { CreateBusesDto } from './dto/create-buses.dto';
+import { UpdateBusesDto } from './dto/update-buses.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('buses')
+@ApiTags('buses')
 export class BusesController {
   constructor(private readonly busesService: BusesService) {}
 
   @Post()
-  create(@Body() createBusDto: CreateBusDto) {
+  create(@Body() createBusDto: CreateBusesDto) {
     return this.busesService.create(createBusDto);
   }
 
@@ -31,7 +33,7 @@ export class BusesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBusDto: UpdateBusDto) {
+  update(@Param('id') id: string, @Body() updateBusDto: UpdateBusesDto) {
     return this.busesService.update(+id, updateBusDto);
   }
 
