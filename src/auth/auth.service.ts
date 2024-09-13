@@ -13,7 +13,7 @@ export class AuthService {
   async kakaoSignIn(createSocialUser: CreateSocialUsersDto) {
     const socialUser = await this.prisma.socialUsers.findUnique({
       where: {
-        socialId: createSocialUser.socialId,
+        socialId: String(createSocialUser.socialId),
       },
     });
 
@@ -34,7 +34,7 @@ export class AuthService {
           password: null,
           socialUsers: {
             create: {
-              socialId: createSocialUser.socialId,
+              socialId: String(createSocialUser.socialId),
               provider: 'kakao',
               nickname: createSocialUser.nickname,
             },
