@@ -2,12 +2,22 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsDateString,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
 
 export class CreateNotificationsDto {
+  @ApiProperty({
+    type: 'integer',
+    format: 'int32',
+    default: 'autoincrement',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt()
+  id?: number;
   @ApiProperty({
     type: 'string',
   })
