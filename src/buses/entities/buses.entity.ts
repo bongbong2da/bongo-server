@@ -1,6 +1,7 @@
 import { BusStatusTypes } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { BusCrews } from '../../bus-crews/entities/bus-crews.entity';
+import { Users } from '../../users/entities/users.entity';
 
 export class Buses {
   @ApiProperty({
@@ -53,9 +54,19 @@ export class Buses {
   })
   password: string | null;
   @ApiProperty({
+    type: 'integer',
+    format: 'int32',
+  })
+  userId: number;
+  @ApiProperty({
     type: () => BusCrews,
     isArray: true,
     required: false,
   })
   busCrews?: BusCrews[];
+  @ApiProperty({
+    type: () => Users,
+    required: false,
+  })
+  users?: Users;
 }

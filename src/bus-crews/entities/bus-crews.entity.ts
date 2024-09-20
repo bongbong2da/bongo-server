@@ -26,6 +26,11 @@ export class BusCrews {
   })
   updatedAt: Date | null;
   @ApiProperty({
+    type: 'integer',
+    format: 'int32',
+  })
+  busId: number;
+  @ApiProperty({
     type: () => Buses,
     required: false,
   })
