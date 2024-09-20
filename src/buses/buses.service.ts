@@ -1,35 +1,82 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateBusesDto } from './dto/create-buses.dto';
 import { UpdateBusesDto } from './dto/update-buses.dto';
+import { makePagination } from '../utils/PaginationUtil';
 
 @Injectable()
 export class BusesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createBusDto: CreateBusesDto) {
-    const createResult = await this.prisma.buses.create({
+    return this.prisma.buses.create({
       data: {
         ...createBusDto,
-        status: 'open',
+        users: {
+          connect: {
+            id: 1,
+          },
+        },
       },
     });
-    return createResult;
   }
 
-  async findAll() {
-    return await this.prisma.buses.findMany();
+  async findAll(params: { page: number; size: number }) {
+    const buses = await this.prisma.buses.findMany({
+      skip: params.page * params.size,
+      take: params.size,
+      include: {
+        users: true,
+      },
+    });
+    const totalCount = await this.prisma.buses.count();
+    const pagination = makePagination({
+      page: params.page,
+      size: params.size,
+      totalCount,
+    });
+    return {
+      data: buses,
+      meta: pagination,
+    };
   }
 
   async findOne(busId: number) {
-    return await this.prisma.buses.findUnique({
+    const bus = await this.prisma.buses.findUnique({
+      where: {
+        id: busId,
+      },
+      include: {
+        users: true,
+      },
+    });
+
+    if (!bus) {
+      throw new NotFoundException(`Bus with id ${busId} not found`);
+    }
+
+    return bus;
+  }
+
+  async update(busId: number, updateBusDto: UpdateBusesDto) {
+    const targetBus = await this.prisma.buses.findUnique({
       where: {
         id: busId,
       },
     });
-  }
 
-  async update(busId: number, updateBusDto: UpdateBusesDto) {
+    if (!targetBus) {
+      throw new NotFoundException(`Bus with id ${busId} not found`);
+    }
+
+    if (targetBus.userId !== 0) {
+      throw new Error('Only creator can update the bus');
+    }
+
     const updateResult = await this.prisma.buses.update({
       where: {
         id: busId,
@@ -39,12 +86,30 @@ export class BusesService {
     return updateResult;
   }
 
-  remove(busId: number) {
-    const deleteResult = this.prisma.buses.delete({
+  async remove(busId: number) {
+    const targetBus = await this.prisma.buses.findUnique({
       where: {
         id: busId,
       },
     });
-    return deleteResult;
+
+    if (!targetBus) {
+      throw new NotFoundException(`Bus with id ${busId} not found`);
+    }
+
+    if (targetBus.userId !== 0) {
+      throw new Error('Only creator can delete the bus');
+    }
+
+    const deleteResult = await this.prisma.buses.delete({
+      where: {
+        id: busId,
+      },
+    });
+    if (deleteResult.id) {
+      return true;
+    } else {
+      throw new InternalServerErrorException('Failed to delete the bus');
+    }
   }
 }
