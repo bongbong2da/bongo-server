@@ -31,12 +31,6 @@ datasource db {
 }
 
 model BusCrews {
-  /// @DtoCreateOptional
-  /// @DtoUpdateOptional
-  /// @DtoRelationCanCreateOnCreate
-  /// @DtoRelationCanConnectOnCreate
-  /// @DtoRelationCanCreateOnUpdate
-  /// @DtoRelationCanConnectOnUpdate
   id        Int
   userId    Int       @map("user_id")
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
@@ -68,12 +62,6 @@ model Buses {
 }
 
 model Friendships {
-  /// @DtoCreateOptional
-  /// @DtoUpdateOptional
-  /// @DtoRelationCanCreateOnCreate
-  /// @DtoRelationCanConnectOnCreate
-  /// @DtoRelationCanCreateOnUpdate
-  /// @DtoRelationCanConnectOnUpdate
   userId                          Int                   @map("user_id")
   friendId                        Int                   @map("friend_id")
   status                          FriendshipStatusTypes @default(pending)
@@ -87,12 +75,6 @@ model Friendships {
 }
 
 model Notifications {
-  /// @DtoCreateOptional
-  /// @DtoUpdateOptional
-  /// @DtoRelationCanCreateOnCreate
-  /// @DtoRelationCanConnectOnCreate
-  /// @DtoRelationCanCreateOnUpdate
-  /// @DtoRelationCanConnectOnUpdate
   id        Int       @id @default(autoincrement())
   userId    Int?      @map("user_id")
   message   String
@@ -105,12 +87,6 @@ model Notifications {
 }
 
 model UserTokens {
-  /// @DtoCreateOptional
-  /// @DtoUpdateOptional
-  /// @DtoRelationCanCreateOnCreate
-  /// @DtoRelationCanConnectOnCreate
-  /// @DtoRelationCanCreateOnUpdate
-  /// @DtoRelationCanConnectOnUpdate
   id               Int       @id @default(autoincrement())
   userId           Int?      @map("user_id")
   accessToken      String    @map("access_token")
@@ -125,12 +101,6 @@ model UserTokens {
 }
 
 model Users {
-  /// @DtoCreateOptional
-  /// @DtoUpdateOptional
-  /// @DtoRelationCanCreateOnCreate
-  /// @DtoRelationCanConnectOnCreate
-  /// @DtoRelationCanCreateOnUpdate
-  /// @DtoRelationCanConnectOnUpdate
   id                                    Int             @id @default(autoincrement())
   username                              String          @db.VarChar(50)
   email                                 String?         @unique @db.VarChar(100)
@@ -149,12 +119,6 @@ model Users {
 }
 
 model SocialUsers {
-  /// @DtoCreateOptional
-  /// @DtoUpdateOptional
-  /// @DtoRelationCanCreateOnCreate
-  /// @DtoRelationCanConnectOnCreate
-  /// @DtoRelationCanCreateOnUpdate
-  /// @DtoRelationCanConnectOnUpdate
   id              Int       @id @default(autoincrement())
   userId          Int       @map("user_id")
   provider        String
