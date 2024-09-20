@@ -5,24 +5,24 @@ generator client {
 generator nestjsDto {
   provider                        = "prisma-generator-nestjs-dto"
   output                          = "../src"
-  noDependencies                  = "false"
+  flatResourceStructure           = "false"
   definiteAssignmentAssertion     = "false"
-  createDtoPrefix                 = "Create"
-  generateFileTypes               = "all"
-  prettier                        = "true"
-  entityPrefix                    = ""
-  reExport                        = "false"
   requiredResponseApiProperty     = "true"
-  outputApiPropertyType           = "true"
   fileNamingStyle                 = "kebab"
   dtoSuffix                       = "Dto"
-  classValidation                 = "true"
   updateDtoPrefix                 = "Update"
-  outputType                      = "class"
+  createDtoPrefix                 = "Create"
+  entityPrefix                    = ""
+  classValidation                 = "true"
+  noDependencies                  = "false"
+  outputApiPropertyType           = "true"
+  reExport                        = "false"
   outputToNestJsResourceStructure = "true"
   entitySuffix                    = ""
+  outputType                      = "class"
+  generateFileTypes               = "all"
+  prettier                        = "true"
   exportRelationModifierClasses   = "true"
-  flatResourceStructure           = "false"
 }
 
 datasource db {
@@ -41,20 +41,15 @@ model BusCrews {
   userId    Int       @map("user_id")
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+  busId     Int       @map("bus_id")
   buses     Buses     @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "bus_crews_bus_id_fkey")
   users     Users     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([id, userId])
+  @@id([id, userId, busId])
   @@map("bus_crews")
 }
 
 model Buses {
-  /// @DtoCreateOptional
-  /// @DtoUpdateOptional
-  /// @DtoRelationCanCreateOnCreate
-  /// @DtoRelationCanConnectOnCreate
-  /// @DtoRelationCanCreateOnUpdate
-  /// @DtoRelationCanConnectOnUpdate
   id            Int            @id @default(autoincrement())
   title         String         @db.VarChar(100)
   startDatetime DateTime       @map("start_datetime") @db.Timestamp(6)
@@ -65,7 +60,9 @@ model Buses {
   updatedAt     DateTime?      @default(now()) @map("updated_at") @db.Timestamp(6)
   isPrivate     Boolean        @default(false) @map("is_private")
   password      String?        @db.VarChar(100)
+  userId        Int            @map("user_id")
   busCrews      BusCrews[]
+  users         Users          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
 
   @@map("buses")
 }
@@ -136,15 +133,16 @@ model Users {
   /// @DtoRelationCanConnectOnUpdate
   id                                    Int             @id @default(autoincrement())
   username                              String          @db.VarChar(50)
-  email       String?      @unique @db.VarChar(100)
-  password    String?      @db.VarChar(255)
+  email                                 String?         @unique @db.VarChar(100)
+  password                              String?         @db.VarChar(255)
   createdAt                             DateTime?       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt                             DateTime?       @default(now()) @map("updated_at") @db.Timestamp(6)
   busCrews                              BusCrews[]
+  buses                                 Buses[]
   friendshipsFriendshipsFriendIdTousers Friendships[]   @relation("friendships_friend_idTousers")
   friendshipsFriendshipsUserIdTousers   Friendships[]   @relation("friendships_user_idTousers")
   notifications                         Notifications[]
-  socialUsers SocialUsers[]
+  socialUsers                           SocialUsers[]
   userTokens                            UserTokens[]
 
   @@map("users")
