@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BusCrews } from '../../bus-crews/entities/bus-crews.entity';
+import { Buses } from '../../buses/entities/buses.entity';
 import { Friendships } from '../../friendships/entities/friendships.entity';
 import { Notifications } from '../../notifications/entities/notifications.entity';
 import { SocialUsers } from '../../social-users/entities/social-users.entity';
@@ -43,6 +44,12 @@ export class Users {
     required: false,
   })
   busCrews?: BusCrews[];
+  @ApiProperty({
+    type: () => Buses,
+    isArray: true,
+    required: false,
+  })
+  buses?: Buses[];
   @ApiProperty({
     type: () => Friendships,
     isArray: true,

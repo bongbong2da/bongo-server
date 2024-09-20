@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsOptional } from 'class-validator';
+import { IsDateString, IsInt, IsOptional } from 'class-validator';
 
 export class UpdateBusCrewsDto {
   @ApiProperty({
@@ -22,4 +22,12 @@ export class UpdateBusCrewsDto {
   @IsOptional()
   @IsDateString()
   updatedAt?: Date | null;
+  @ApiProperty({
+    type: 'integer',
+    format: 'int32',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt()
+  busId?: number;
 }

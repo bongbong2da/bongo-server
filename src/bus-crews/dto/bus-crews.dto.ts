@@ -13,4 +13,9 @@ export class BusCrewsDto {
     nullable: true,
   })
   updatedAt: Date | null;
+  @ApiProperty({
+    type: 'integer',
+    format: 'int32',
+  })
+  busId: number;
 }
