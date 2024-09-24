@@ -1,8 +1,7 @@
-import { ApiExtraModels, ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsNotEmpty } from 'class-validator';
 
-export class BusCrewsIdUserIdBusIdUniqueInputDto {
+export class ConnectBusCrewsDto {
   @ApiProperty({
     type: 'integer',
     format: 'int32',
@@ -10,29 +9,4 @@ export class BusCrewsIdUserIdBusIdUniqueInputDto {
   @IsNotEmpty()
   @IsInt()
   id: number;
-  @ApiProperty({
-    type: 'integer',
-    format: 'int32',
-  })
-  @IsNotEmpty()
-  @IsInt()
-  userId: number;
-  @ApiProperty({
-    type: 'integer',
-    format: 'int32',
-  })
-  @IsNotEmpty()
-  @IsInt()
-  busId: number;
-}
-
-@ApiExtraModels(BusCrewsIdUserIdBusIdUniqueInputDto)
-export class ConnectBusCrewsDto {
-  @ApiProperty({
-    type: BusCrewsIdUserIdBusIdUniqueInputDto,
-  })
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => BusCrewsIdUserIdBusIdUniqueInputDto)
-  id_userId_busId: BusCrewsIdUserIdBusIdUniqueInputDto;
 }
