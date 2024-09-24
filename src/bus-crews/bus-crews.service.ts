@@ -1,26 +1,91 @@
-import { Injectable } from '@nestjs/common';
-import { CreateBusCrewDto } from './dto/create-bus-crew.dto';
-import { UpdateBusCrewDto } from './dto/update-bus-crew.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class BusCrewsService {
-  create(createBusCrewDto: CreateBusCrewDto) {
-    return 'This action adds a new busCrew';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async enterBus(busId: number, userId: number) {
+    const createCrewResult = await this.prisma.busCrews.create({
+      data: {
+        buses: {
+          connect: {
+            id: busId,
+          },
+        },
+        users: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
+
+    return this.prisma.buses.findUnique({
+      where: {
+        id: busId,
+      },
+      include: {
+        busCrews: true,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all busCrews`;
+  async exitBus(busCrewId: number, userId: number) {
+    const targetBusCrew = await this.prisma.busCrews.delete({
+      where: {
+        id: busCrewId,
+        users: {
+          id: userId,
+        },
+      },
+    });
+
+    if (!targetBusCrew) {
+      throw new NotFoundException(`Bus Crew with id ${busCrewId} not found`);
+    }
+
+    return true;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} busCrew`;
+  async getCrews(busId: number) {
+    const targetBus = await this.prisma.buses.findUnique({
+      where: {
+        id: busId,
+      },
+      include: {
+        busCrews: true,
+      },
+    });
+
+    if (!targetBus) {
+      throw new NotFoundException(`Bus with id ${busId} not found`);
+    }
+
+    return targetBus.busCrews;
   }
 
-  update(id: number, updateBusCrewDto: UpdateBusCrewDto) {
-    return `This action updates a #${id} busCrew`;
-  }
+  async kickBusCrew(busCrewId: number, userId: number) {
+    const targetBusCrew = await this.prisma.busCrews.delete({
+      where: {
+        id: busCrewId,
+        users: {
+          id: userId,
+        },
+      },
+      include: {
+        buses: true,
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} busCrew`;
+    if (targetBusCrew.buses.id !== userId) {
+      throw new NotFoundException(`Kicking bus crew is not allowed`);
+    }
+
+    if (!targetBusCrew) {
+      throw new NotFoundException(`Bus Crew with id ${busCrewId} not found`);
+    }
+
+    return true;
   }
 }
