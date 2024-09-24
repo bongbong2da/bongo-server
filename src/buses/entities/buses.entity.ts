@@ -60,10 +60,10 @@ export class Buses {
   userId: number;
   @ApiProperty({
     type: () => BusCrews,
+    isArray: true,
     required: false,
-    nullable: true,
   })
-  busCrews?: BusCrews | null;
+  busCrews?: BusCrews[];
   @ApiProperty({
     type: () => Users,
     required: false,

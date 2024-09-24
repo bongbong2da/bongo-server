@@ -2,6 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class BusCrewsDto {
   @ApiProperty({
+    type: 'integer',
+    format: 'int32',
+  })
+  id: number;
+  @ApiProperty({
     type: 'string',
     format: 'date-time',
     nullable: true,
@@ -13,9 +18,4 @@ export class BusCrewsDto {
     nullable: true,
   })
   updatedAt: Date | null;
-  @ApiProperty({
-    type: 'integer',
-    format: 'int32',
-  })
-  busId: number;
 }
