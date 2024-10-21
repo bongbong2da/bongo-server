@@ -5,6 +5,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { BusCrewsService } from './bus-crews.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -33,8 +34,9 @@ export class BusCrewsController {
     required: true,
     description: '승무원 정보',
   })
-  enterBus(@Query('busId') busId: number) {
-    return this.busCrewsService.enterBus(busId, 1);
+  enterBus(@Req() req, @Query('busId') busId: number) {
+    const userId = req.user.sub;
+    return this.busCrewsService.enterBus(busId, userId);
   }
 
   @Delete('/:busCrewId')
@@ -53,8 +55,9 @@ export class BusCrewsController {
     required: true,
     description: '승무원 정보',
   })
-  exitBus(@Query('busCrewId', ParseIntPipe) busCrewId: number) {
-    return this.busCrewsService.exitBus(busCrewId, 1);
+  exitBus(@Req() req, @Query('busCrewId', ParseIntPipe) busCrewId: number) {
+    const userId = req.user.sub;
+    return this.busCrewsService.exitBus(busCrewId, userId);
   }
 
   @Get('/bus/:busId')
@@ -88,7 +91,8 @@ export class BusCrewsController {
     required: true,
     description: '승무원 정보',
   })
-  kickBusCrew(@Query('busCrewId', ParseIntPipe) busCrewId: number) {
-    return this.busCrewsService.kickBusCrew(busCrewId, 1);
+  kickBusCrew(@Req() req, @Query('busCrewId', ParseIntPipe) busCrewId: number) {
+    const userId = req.user.sub;
+    return this.busCrewsService.kickBusCrew(busCrewId, userId);
   }
 }
