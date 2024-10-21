@@ -1,26 +1,137 @@
-import { Injectable } from '@nestjs/common';
-import { CreateFriendshipDto } from './dto/create-friendship.dto';
-import { UpdateFriendshipDto } from './dto/update-friendship.dto';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
+import { makePagination } from '../utils/PaginationUtil';
 
 @Injectable()
 export class FriendshipsService {
-  create(createFriendshipDto: CreateFriendshipDto) {
-    return 'This action adds a new friendship';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(userId: number, targetUserId: number) {
+    if (userId === targetUserId) {
+      throw new BadRequestException('Cannot add yourself as a friend');
+    }
+
+    try {
+      const isExist = await this.prisma.friendships.findFirst({
+        where: {
+          usersFriendshipsUserIdTousers: {
+            id: userId,
+          },
+          usersFriendshipsFriendIdTousers: {
+            id: targetUserId,
+          },
+        },
+      });
+
+      if (isExist) {
+        throw new BadRequestException('Friendship already exists');
+      }
+
+      const createResult = await this.prisma.friendships.create({
+        data: {
+          usersFriendshipsUserIdTousers: {
+            connect: {
+              id: userId,
+            },
+          },
+          usersFriendshipsFriendIdTousers: {
+            connect: {
+              id: targetUserId,
+            },
+          },
+        },
+      });
+
+      if (createResult) {
+        return true;
+      }
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
-  findAll() {
-    return `This action returns all friendships`;
+  async getFriends(userId: number, params: { page: number; size: number }) {
+    const friends = await this.prisma.friendships.findMany({
+      where: {
+        usersFriendshipsUserIdTousers: {
+          id: userId,
+        },
+      },
+      skip: params.page * params.size,
+      take: params.size,
+      include: {
+        usersFriendshipsFriendIdTousers: true,
+      },
+    });
+
+    const extractFriends = friends.map(
+      (friend) => friend.usersFriendshipsFriendIdTousers,
+    );
+
+    const totalCount = await this.prisma.friendships.count({
+      where: {
+        usersFriendshipsUserIdTousers: {
+          id: userId,
+        },
+      },
+    });
+
+    const pagination = makePagination({
+      page: params.page,
+      size: params.size,
+      totalCount,
+    });
+
+    return {
+      data: extractFriends,
+      meta: pagination,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} friendship`;
-  }
+  async removeFriendship(userId: number, targetUserId: number) {
+    try {
+      const isExist = await this.prisma.friendships.findFirst({
+        where: {
+          usersFriendshipsUserIdTousers: {
+            id: userId,
+          },
+          usersFriendshipsFriendIdTousers: {
+            id: targetUserId,
+          },
+        },
+      });
 
-  update(id: number, updateFriendshipDto: UpdateFriendshipDto) {
-    return `This action updates a #${id} friendship`;
-  }
+      if (!isExist) {
+        throw new BadRequestException('Friendship does not exist');
+      }
 
-  remove(id: number) {
-    return `This action removes a #${id} friendship`;
+      const removeResult = await this.prisma.friendships.deleteMany({
+        where: {
+          AND: [
+            {
+              usersFriendshipsUserIdTousers: {
+                id: userId,
+              },
+            },
+            {
+              usersFriendshipsFriendIdTousers: {
+                id: targetUserId,
+              },
+            },
+          ],
+        },
+      });
+      if (removeResult) {
+        return true;
+      } else {
+        throw new InternalServerErrorException('Failed to remove friendship');
+      }
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 }
