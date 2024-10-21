@@ -1,8 +1,10 @@
 import {
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -69,7 +71,7 @@ export class NotificationsController {
     return this.notificationsService.readAllNotifications(userId);
   }
 
-  @Post(':notificationId/read')
+  @Patch(':notificationId/read')
   @ApiOperation({
     operationId: 'readNotification',
     summary: '알림 읽음 처리',
@@ -89,7 +91,7 @@ export class NotificationsController {
     return this.notificationsService.readNotification(userId, notificationId);
   }
 
-  @Post(':notificationId/delete')
+  @Delete(':notificationId/delete')
   @ApiOperation({
     operationId: 'deleteNotification',
     summary: '알림 삭제',
