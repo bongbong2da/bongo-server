@@ -68,7 +68,7 @@ export class BusCrewsController {
     description: '승무원 조회 성공',
     type: [BusCrewsDto],
   })
-  getCrews(@Query('busId') busId: number) {
+  getCrews(@Query('busId', ParseIntPipe) busId: number) {
     return this.busCrewsService.getCrews(busId);
   }
 

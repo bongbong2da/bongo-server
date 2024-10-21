@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateSocialUsersDto } from '../social-users/dto/create-social-users.dto';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { Users } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,7 @@ export class AuthService {
       });
       const accessToken = this.jwt.sign({ sub: user.id }, { expiresIn: '1d' });
       const refreshToken = this.jwt.sign({ sub: user.id }, { expiresIn: '7d' });
+      this.saveUserTokens(user, { accessToken, refreshToken });
       return { accessToken, refreshToken };
     } else {
       const user = await this.prisma.users.create({
@@ -43,8 +45,27 @@ export class AuthService {
       });
       const accessToken = this.jwt.sign({ sub: user.id }, { expiresIn: '1d' });
       const refreshToken = this.jwt.sign({ sub: user.id }, { expiresIn: '7d' });
+      this.saveUserTokens(user, { accessToken, refreshToken });
       return { accessToken, refreshToken };
     }
+  }
+
+  async saveUserTokens(
+    user: Users,
+    tokens: { accessToken: string; refreshToken: string },
+  ) {
+    await this.prisma.userTokens.create({
+      data: {
+        ...tokens,
+        accessExpiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        refreshExpiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+        users: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
   }
 
   async refreshToken(tokens: { accessToken: string; refreshToken: string }) {

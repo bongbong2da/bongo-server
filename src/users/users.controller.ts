@@ -74,7 +74,7 @@ export class UsersController {
     return this.usersService.findAll({ page, size });
   }
 
-  @Get(':id')
+  @Get(':userId')
   @ApiOperation({
     operationId: 'getUser',
     summary: '사용자 조회',
@@ -85,16 +85,16 @@ export class UsersController {
     description: '사용자 조회',
   })
   @ApiQuery({
-    name: 'id',
+    name: 'userId',
     description: '사용자 ID',
     required: true,
     type: Number,
   })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findOne(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.findOne(userId);
   }
 
-  @Patch(':id')
+  @Patch(':userId')
   @ApiOperation({
     operationId: 'updateUser',
     summary: '사용자 수정',
@@ -105,16 +105,19 @@ export class UsersController {
     description: '사용자 수정 성공',
   })
   @ApiQuery({
-    name: 'id',
+    name: 'userId',
     description: '사용자 ID',
     required: true,
     type: Number,
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUsersDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() updateUserDto: UpdateUsersDto,
+  ) {
+    return this.usersService.update(userId, updateUserDto);
   }
 
-  @Delete(':id')
+  @Delete(':userId')
   @ApiOperation({
     operationId: 'removeUser',
     summary: '사용자 삭제',
@@ -125,12 +128,12 @@ export class UsersController {
     description: '사용자 삭제 성공',
   })
   @ApiQuery({
-    name: 'id',
+    name: 'userId',
     description: '사용자 ID',
     required: true,
     type: Number,
   })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  remove(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.remove(userId);
   }
 }

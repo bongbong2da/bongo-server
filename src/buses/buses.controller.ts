@@ -72,7 +72,7 @@ export class BusesController {
     return this.busesService.findAll({ page, size });
   }
 
-  @Get(':id')
+  @Get(':busId')
   @ApiOperation({
     operationId: 'getBus',
     summary: '배차된 버스 조회',
@@ -89,11 +89,11 @@ export class BusesController {
     required: true,
     type: Number,
   })
-  findOne(@Param('id') id: string) {
-    return this.busesService.findOne(+id);
+  findOne(@Param('busId', ParseIntPipe) busId: string) {
+    return this.busesService.findOne(+busId);
   }
 
-  @Patch(':id')
+  @Patch(':busId')
   @ApiOperation({
     operationId: 'updateBus',
     summary: '배차된 버스 수정',
@@ -115,11 +115,14 @@ export class BusesController {
     required: true,
     description: '수정할 버스 정보',
   })
-  update(@Param('id') id: string, @Body() updateBusDto: UpdateBusesDto) {
-    return this.busesService.update(+id, updateBusDto);
+  update(
+    @Param('busId', ParseIntPipe) busId: number,
+    @Body() updateBusDto: UpdateBusesDto,
+  ) {
+    return this.busesService.update(busId, updateBusDto);
   }
 
-  @Delete(':id')
+  @Delete(':busId')
   @ApiOperation({
     operationId: 'removeBus',
     summary: '배차된 버스 삭제',
@@ -136,7 +139,7 @@ export class BusesController {
     required: true,
     type: Number,
   })
-  remove(@Param('id') id: string) {
-    return this.busesService.remove(+id);
+  remove(@Param('busId', ParseIntPipe) busId: number) {
+    return this.busesService.remove(busId);
   }
 }
