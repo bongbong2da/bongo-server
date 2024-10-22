@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { makePagination } from '../utils/PaginationUtil';
-import { Notifications } from '@prisma/client';
 
 @Injectable()
 export class NotificationsService {
@@ -119,9 +118,13 @@ export class NotificationsService {
     }
   }
 
-  sendNotification(notification: Notifications) {
+  sendNotification(params: { userId: number; message: string; link?: string }) {
     this.prisma.notifications.create({
-      data: notification,
+      data: {
+        userId: params.userId,
+        message: params.message,
+        isRead: false,
+      },
     });
   }
 }
