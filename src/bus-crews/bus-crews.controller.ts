@@ -6,15 +6,25 @@ import {
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { BusCrewsService } from './bus-crews.service';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateBusCrewsDto } from './dto/create-bus-crews.dto';
 import { BusesDto } from '../buses/dto/buses.dto';
 import { BusCrewsDto } from './dto/bus-crews.dto';
+import AuthGuard from '../guards/AuthGuard';
 
 @Controller('bus-crews')
 @ApiTags('bus-crews')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 export class BusCrewsController {
   constructor(private readonly busCrewsService: BusCrewsService) {}
 
@@ -34,7 +44,7 @@ export class BusCrewsController {
     required: true,
     description: '승무원 정보',
   })
-  enterBus(@Req() req, @Query('busId') busId: number) {
+  enterBus(@Req() req, @Query('busId', ParseIntPipe) busId: number) {
     const userId = req.user.sub;
     return this.busCrewsService.enterBus(busId, userId);
   }
