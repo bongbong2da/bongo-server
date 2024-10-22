@@ -10,9 +10,8 @@ export class Notifications {
   @ApiProperty({
     type: 'integer',
     format: 'int32',
-    nullable: true,
   })
-  userId: number | null;
+  userId: number;
   @ApiProperty({
     type: 'string',
   })
@@ -37,7 +36,6 @@ export class Notifications {
   @ApiProperty({
     type: () => Users,
     required: false,
-    nullable: true,
   })
-  users?: Users | null;
+  users?: Users;
 }
