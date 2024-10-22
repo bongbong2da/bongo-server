@@ -119,12 +119,25 @@ export class NotificationsService {
   }
 
   sendNotification(params: { userId: number; message: string; link?: string }) {
-    this.prisma.notifications.create({
-      data: {
-        userId: params.userId,
-        message: params.message,
-        isRead: false,
-      },
-    });
+    try {
+      const sendNotificationResult = this.prisma.notifications
+        .create({
+          data: {
+            users: {
+              connect: {
+                id: params.userId,
+              },
+            },
+            message: params.message,
+            isRead: false,
+          },
+        })
+        .then((result) => {
+          console.log(result);
+          return result;
+        });
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
